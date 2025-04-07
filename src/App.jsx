@@ -80,7 +80,11 @@ export default function App() {
   const tabellen = ['personen', 'tatorte', 'beobachtungen', 'alibis', 'telefonate', 'fahrzeuge'];
   const aktFall = faelle[fall];
 
-  return (
+  if (!db) {
+  return <p style={{ padding: '2rem', fontFamily: 'Arial' }}>📦 Datenbank wird geladen...</p>;
+}
+
+return (
     <div style={{ padding: '2rem', fontFamily: 'Arial', backgroundColor: '#f4f4f8' }}>
       <h1 style={{ color: '#1a237e' }}>🕵️ SQL Detektive</h1>
 
