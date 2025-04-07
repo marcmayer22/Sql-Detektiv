@@ -54,6 +54,10 @@ export default function App() {
   }, []);
 
   const runQuery = () => {
+  if (!db) {
+    setError("❗ Die Datenbank ist noch nicht geladen.");
+    return;
+  }
     try {
       setError('');
       const res = db.exec(query);
