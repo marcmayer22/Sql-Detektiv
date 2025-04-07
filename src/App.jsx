@@ -108,15 +108,22 @@ export default function App() {
         placeholder='Gib deine SQL-Abfrage hier ein...'
         style={{ width: '100%', minHeight: '100px', marginTop: '10px' }}
       />
-      <div style={{ marginTop: '0.5rem' }}>
-        <button onClick={runQuery} style={{ marginRight: '1rem' }}>Abfrage ausführen</button>
-        <button
-          onClick={() => setSchritt((schritt + 1) % aktFall.beschreibungen.length)}
-          style={{ marginRight: '1rem' }}
-        >
-          Nächster Schritt
-        </button>
-      </div>
+      
+<div style={{ marginTop: '0.5rem' }}>
+  <button
+    onClick={runQuery}
+    style={{ marginRight: '1rem' }}
+  >
+    Abfrage ausführen
+  </button>
+  <button
+    onClick={() => setSchritt((schritt + 1) % aktFall.beschreibungen.length)}
+    style={{ marginRight: '1rem' }}
+  >
+    Nächster Schritt
+  </button>
+</div>
+
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
