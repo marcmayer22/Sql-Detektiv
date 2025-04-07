@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import initSqlJs from 'sql.js/dist/sql-wasm.js';
 
@@ -13,27 +14,17 @@ export default function App() {
     fall1: {
       name: "Der Tatort in Berlin",
       beschreibungen: [
-        "1. Schritt: Zeige alle Tatorte in Berlin.",
-        "2. Schritt: Zeige alle Beobachtungen, die um 22:00 Uhr stattfanden.",
-        "3. Schritt: Zeige alle Personen mit Rolle 'Täter'."
-      ],
-      beispiele: [
-        "SELECT * FROM tatorte WHERE stadt = 'Berlin';",
-        "SELECT * FROM beobachtungen WHERE uhrzeit = '22:00';",
-        "SELECT * FROM personen WHERE rolle = 'Täter';"
+        "1. Zeige alle Tatorte in Berlin.",
+        "2. Zeige alle Beobachtungen um 22:00 Uhr.",
+        "3. Zeige alle Personen mit Rolle 'Täter'."
       ]
     },
     fall2: {
       name: "Das verdächtige Telefonat",
       beschreibungen: [
-        "1. Schritt: Zeige alle Telefonate.",
-        "2. Schritt: Zeige alle Telefonate um 20:15 Uhr.",
-        "3. Schritt: Zeige alle Personen, die telefoniert haben (von_id)."
-      ],
-      beispiele: [
-        "SELECT * FROM telefonate;",
-        "SELECT * FROM telefonate WHERE uhrzeit = '20:15';",
-        "SELECT * FROM personen WHERE id = 1;"
+        "1. Zeige alle Telefonate.",
+        "2. Zeige alle Telefonate um 20:15 Uhr.",
+        "3. Zeige die Person mit ID 1."
       ]
     }
   };
@@ -51,14 +42,12 @@ export default function App() {
               CREATE TABLE alibis (id INTEGER, person_id INTEGER, status TEXT);
               CREATE TABLE telefonate (id INTEGER, von_id INTEGER, an_id INTEGER, uhrzeit TEXT);
               CREATE TABLE fahrzeuge (id INTEGER, kennzeichen TEXT, besitzer_id INTEGER);
-
               INSERT INTO personen VALUES (1, 'Max Müller', 'Zeuge'), (2, 'Lena Schulz', 'Täter'), (3, 'Tom Becker', 'Zeuge');
               INSERT INTO tatorte VALUES (1, 'Mozartstraße 12', 'Berlin', '22:00');
               INSERT INTO beobachtungen VALUES (1, 1, 1, '22:00'), (2, 2, 1, '22:00');
               INSERT INTO alibis VALUES (1, 1, 'bestätigt');
               INSERT INTO telefonate VALUES (1, 1, NULL, '20:15');
               INSERT INTO fahrzeuge VALUES (1, 'B-XY 1234', 2);`);
-
       setDb(db);
     };
     loadDb();
@@ -88,53 +77,40 @@ export default function App() {
   const aktFall = faelle[fall];
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial', background: '#f4f4f8' }}>
+    <div style={{ padding: '2rem', fontFamily: 'Arial', backgroundColor: '#f4f4f8' }}>
       <h1 style={{ color: '#1a237e' }}>🕵️ SQL Detektive</h1>
 
       <div style={{ marginBottom: '1rem' }}>
         {Object.keys(faelle).map(key => (
           <button key={key} onClick={() => { setFall(key); setSchritt(0); }} style={{ marginRight: '1rem' }}>
             {faelle[key].name}
-          
+          </button>
         ))}
       </div>
 
-      <h2 style={{ marginBottom: '0.5rem' }}>{aktFall.name} – Schritt {schritt + 1} von {aktFall.beschreibungen.length}</h2>
+      <h2>{aktFall.name} – Schritt {schritt + 1}</h2>
       <p>{aktFall.beschreibungen[schritt]}</p>
 
       <textarea
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder='Gib deine SQL-Abfrage hier ein...'
-        style={{ width: '100%', minHeight: '100px', marginTop: '10px' }}
+        placeholder='Gib deine SQL-Abfrage ein...'
+        style={{ width: '100%', minHeight: '100px' }}
       />
-      
 
-
-
-<div style={{ marginTop: '0.5rem' }}>
-  <button
-    onClick={runQuery}
-    style={{ marginRight: '1rem' }}
-  >
-    Abfrage ausführen
-  </button>
-  <button
-    onClick={() => setSchritt((schritt + 1) % aktFall.beschreibungen.length)}
-    style={{ marginRight: '1rem' }}
-  >
-    Nächster Schritt
-  </button>
-</div>
-
-
-
-
+      <div style={{ marginTop: '1rem' }}>
+        <button onClick={runQuery} style={{ marginRight: '1rem' }}>Abfrage ausführen</button>
+        <button
+          onClick={() => setSchritt((schritt + 1) % aktFall.beschreibungen.length)}
+        >
+          Nächster Schritt
+        </button>
+      </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {result && result.length > 0 && (
-        <table border='1' cellPadding='5' style={{ marginTop: '1rem', background: '#fff' }}>
+        <table border='1' cellPadding='5' style={{ marginTop: '1rem', backgroundColor: '#fff' }}>
           <thead>
             <tr>
               {result[0].columns.map((col) => (
@@ -162,9 +138,7 @@ export default function App() {
             <h3>{t}</h3>
             <table border='1' cellPadding='5'>
               <thead>
-                <tr>
-                  {rows[0].columns.map(col => <th key={col}>{col}</th>)}
-                </tr>
+                <tr>{rows[0].columns.map(col => <th key={col}>{col}</th>)}</tr>
               </thead>
               <tbody>
                 {rows[0].values.map((r, idx) => (
