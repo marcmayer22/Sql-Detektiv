@@ -6,6 +6,34 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [fall, setFall] = useState('fall1');
+
+  const faelle = {
+    fall1: {
+      beschreibung: 'Wer war am Tatort Mozartstraße 12 um 22:00 Uhr und hat kein Alibi?',
+      beispiel: `SELECT p.name FROM personen p
+JOIN beobachtungen b ON p.id = b.person_id
+JOIN tatorte t ON b.tatort_id = t.id
+LEFT JOIN alibis a ON p.id = a.person_id
+WHERE t.ort = 'Mozartstraße 12'
+AND t.zeit = '22:00'
+AND (a.status IS NULL OR a.status != 'bestätigt');`
+    },
+    fall2: {
+      beschreibung: 'Wer hat um 20:15 Uhr telefoniert?',
+      beispiel: `SELECT p.name FROM telefonate t
+JOIN personen p ON t.von_id = p.id
+WHERE t.uhrzeit = '20:15';`
+    },
+    fall3: {
+      beschreibung: 'Wer besitzt das Fahrzeug mit Kennzeichen B-XY 1234 und hat kein Alibi?',
+      beispiel: `SELECT p.name FROM fahrzeuge f
+JOIN personen p ON f.besitzer_id = p.id
+LEFT JOIN alibis a ON p.id = a.person_id
+WHERE f.kennzeichen = 'B-XY 1234'
+AND (a.status IS NULL OR a.status != 'bestätigt');`
+    }
+  };
 
   useEffect(() => {
     const loadDb = async () => {
@@ -44,17 +72,44 @@ export default function App() {
     }
   };
 
+  const showTable = (tableName) => {
+    if (!db) return [];
+    try {
+      return db.exec(`SELECT * FROM ${tableName}`);
+    } catch {
+      return [];
+    }
+  };
+
+  const tabellen = ['personen', 'tatorte', 'beobachtungen', 'alibis', 'telefonate', 'fahrzeuge'];
+
   return (
     <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h1>🕵️ SQL Detektive (Vite)</h1>
-      <p><strong>Fall 1:</strong> Wer war am Tatort Mozartstraße 12 um 22:00 Uhr und hat kein Alibi?</p>
-      <p><strong>Fall 2:</strong> Wer hat um 20:15 Uhr telefoniert?</p>
-      <p><strong>Fall 3:</strong> Wer besitzt das Fahrzeug mit Kennzeichen B-XY 1234 und hat kein Alibi?</p>
+      <h1>🕵️ SQL Detektive (Fälle wechseln & Tabellen einsehen)</h1>
 
-      <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder='Gib deine SQL-Abfrage hier ein...'></textarea>
-      <button onClick={runQuery} style={{ marginTop: '1rem' }}>Abfrage ausführen</button>
+      <div style={{ marginBottom: '1rem' }}>
+        {Object.keys(faelle).map(key => (
+          <button key={key} onClick={() => setFall(key)} style={{ marginRight: '1rem' }}>
+            {key.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      <p><strong>Fallbeschreibung:</strong> {faelle[fall].beschreibung}</p>
+      <textarea
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder='Gib deine SQL-Abfrage hier ein...'
+      />
+      <div style={{ marginTop: '0.5rem' }}>
+        <button onClick={runQuery}>Abfrage ausführen</button>
+        <button onClick={() => setQuery(faelle[fall].beispiel)} style={{ marginLeft: '1rem' }}>
+          Beispiel anzeigen
+        </button>
+      </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
+
       {result && result.length > 0 && (
         <table border='1' cellPadding='5' style={{ marginTop: '1rem', background: '#fff' }}>
           <thead>
@@ -75,6 +130,30 @@ export default function App() {
           </tbody>
         </table>
       )}
+
+      <h2 style={{ marginTop: '2rem' }}>📊 Tabellenübersicht</h2>
+      {tabellen.map(t => {
+        const rows = showTable(t);
+        return rows.length > 0 ? (
+          <div key={t} style={{ marginBottom: '2rem' }}>
+            <h3>{t}</h3>
+            <table border='1' cellPadding='5'>
+              <thead>
+                <tr>
+                  {rows[0].columns.map(col => <th key={col}>{col}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {rows[0].values.map((r, idx) => (
+                  <tr key={idx}>
+                    {r.map((val, i) => <td key={i}>{val}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : null;
+      })}
     </div>
   );
 }
