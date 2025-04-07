@@ -95,7 +95,7 @@ export default function App() {
         {Object.keys(faelle).map(key => (
           <button key={key} onClick={() => { setFall(key); setSchritt(0); }} style={{ marginRight: '1rem' }}>
             {faelle[key].name}
-          </button>
+          
         ))}
       </div>
 
@@ -109,13 +109,13 @@ export default function App() {
         style={{ width: '100%', minHeight: '100px', marginTop: '10px' }}
       />
       <div style={{ marginTop: '0.5rem' }}>
-        <button onClick={runQuery}>Abfrage ausführen</button>
-        {/* entfernt */}
+        <button onClick={runQuery}>Abfrage ausführen
+        
           Beispiel anzeigen
-        </button>
+        
         <button onClick={() => setSchritt((schritt + 1) % aktFall.beschreibungen.length)} style={{ marginLeft: '1rem' }}>
           Nächster Schritt
-        </button>
+        
       </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -143,7 +143,7 @@ export default function App() {
 
       <h2 style={{ marginTop: '2rem' }}>📊 Tabellenübersicht</h2>
       {tabellen.map(t => {
-        const rows = showTable(t) || [];
+        const rows = showTable(t);
         return rows.length > 0 ? (
           <div key={t} style={{ marginBottom: '2rem' }}>
             <h3>{t}</h3>
