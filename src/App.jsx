@@ -110,7 +110,7 @@ export default function App() {
       />
       <div style={{ marginTop: '0.5rem' }}>
         <button onClick={runQuery}>Abfrage ausführen</button>
-        <button onClick={() => setQuery(aktFall.beispiele[schritt])} style={{ marginLeft: '1rem' }}>
+        <!-- entfernt -->
           Beispiel anzeigen
         </button>
         <button onClick={() => setSchritt((schritt + 1) % aktFall.beschreibungen.length)} style={{ marginLeft: '1rem' }}>
@@ -143,7 +143,7 @@ export default function App() {
 
       <h2 style={{ marginTop: '2rem' }}>📊 Tabellenübersicht</h2>
       {tabellen.map(t => {
-        const rows = showTable(t);
+        const rows = showTable(t) || [];
         return rows.length > 0 ? (
           <div key={t} style={{ marginBottom: '2rem' }}>
             <h3>{t}</h3>
