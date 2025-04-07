@@ -7,31 +7,34 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [fall, setFall] = useState('fall1');
+  const [schritt, setSchritt] = useState(0);
 
   const faelle = {
     fall1: {
-      beschreibung: 'Wer war am Tatort Mozartstraße 12 um 22:00 Uhr und hat kein Alibi?',
-      beispiel: `SELECT p.name FROM personen p
-JOIN beobachtungen b ON p.id = b.person_id
-JOIN tatorte t ON b.tatort_id = t.id
-LEFT JOIN alibis a ON p.id = a.person_id
-WHERE t.ort = 'Mozartstraße 12'
-AND t.zeit = '22:00'
-AND (a.status IS NULL OR a.status != 'bestätigt');`
+      name: "Der Tatort in Berlin",
+      beschreibungen: [
+        "1. Schritt: Zeige alle Tatorte in Berlin.",
+        "2. Schritt: Zeige alle Beobachtungen, die um 22:00 Uhr stattfanden.",
+        "3. Schritt: Zeige alle Personen mit Rolle 'Täter'."
+      ],
+      beispiele: [
+        "SELECT * FROM tatorte WHERE stadt = 'Berlin';",
+        "SELECT * FROM beobachtungen WHERE uhrzeit = '22:00';",
+        "SELECT * FROM personen WHERE rolle = 'Täter';"
+      ]
     },
     fall2: {
-      beschreibung: 'Wer hat um 20:15 Uhr telefoniert?',
-      beispiel: `SELECT p.name FROM telefonate t
-JOIN personen p ON t.von_id = p.id
-WHERE t.uhrzeit = '20:15';`
-    },
-    fall3: {
-      beschreibung: 'Wer besitzt das Fahrzeug mit Kennzeichen B-XY 1234 und hat kein Alibi?',
-      beispiel: `SELECT p.name FROM fahrzeuge f
-JOIN personen p ON f.besitzer_id = p.id
-LEFT JOIN alibis a ON p.id = a.person_id
-WHERE f.kennzeichen = 'B-XY 1234'
-AND (a.status IS NULL OR a.status != 'bestätigt');`
+      name: "Das verdächtige Telefonat",
+      beschreibungen: [
+        "1. Schritt: Zeige alle Telefonate.",
+        "2. Schritt: Zeige alle Telefonate um 20:15 Uhr.",
+        "3. Schritt: Zeige alle Personen, die telefoniert haben (von_id)."
+      ],
+      beispiele: [
+        "SELECT * FROM telefonate;",
+        "SELECT * FROM telefonate WHERE uhrzeit = '20:15';",
+        "SELECT * FROM personen WHERE id = 1;"
+      ]
     }
   };
 
@@ -82,29 +85,36 @@ AND (a.status IS NULL OR a.status != 'bestätigt');`
   };
 
   const tabellen = ['personen', 'tatorte', 'beobachtungen', 'alibis', 'telefonate', 'fahrzeuge'];
+  const aktFall = faelle[fall];
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h1>🕵️ SQL Detektive (Fälle wechseln & Tabellen einsehen)</h1>
+    <div style={{ padding: '2rem', fontFamily: 'Arial', background: '#f4f4f8' }}>
+      <h1 style={{ color: '#1a237e' }}>🕵️ SQL Detektive</h1>
 
       <div style={{ marginBottom: '1rem' }}>
         {Object.keys(faelle).map(key => (
-          <button key={key} onClick={() => setFall(key)} style={{ marginRight: '1rem' }}>
-            {key.toUpperCase()}
+          <button key={key} onClick={() => { setFall(key); setSchritt(0); }} style={{ marginRight: '1rem' }}>
+            {faelle[key].name}
           </button>
         ))}
       </div>
 
-      <p><strong>Fallbeschreibung:</strong> {faelle[fall].beschreibung}</p>
+      <h2 style={{ marginBottom: '0.5rem' }}>{aktFall.name} – Schritt {schritt + 1} von {aktFall.beschreibungen.length}</h2>
+      <p>{aktFall.beschreibungen[schritt]}</p>
+
       <textarea
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder='Gib deine SQL-Abfrage hier ein...'
+        style={{ width: '100%', minHeight: '100px', marginTop: '10px' }}
       />
       <div style={{ marginTop: '0.5rem' }}>
         <button onClick={runQuery}>Abfrage ausführen</button>
-        <button onClick={() => setQuery(faelle[fall].beispiel)} style={{ marginLeft: '1rem' }}>
+        <button onClick={() => setQuery(aktFall.beispiele[schritt])} style={{ marginLeft: '1rem' }}>
           Beispiel anzeigen
+        </button>
+        <button onClick={() => setSchritt((schritt + 1) % aktFall.beschreibungen.length)} style={{ marginLeft: '1rem' }}>
+          Nächster Schritt
         </button>
       </div>
 
