@@ -110,7 +110,7 @@ export default function App() {
       />
       <div style={{ marginTop: '0.5rem' }}>
         <button onClick={runQuery}>Abfrage ausführen</button>
-        <!-- entfernt -->
+        {/* entfernt */}
           Beispiel anzeigen
         </button>
         <button onClick={() => setSchritt((schritt + 1) % aktFall.beschreibungen.length)} style={{ marginLeft: '1rem' }}>
